@@ -72,3 +72,14 @@ export const add = mutation({
     return ctx.db.insert("transactions", { userId, ...args });
   },
 });
+
+export const remove = mutation({
+  args: { id: v.id("transactions") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+    const txn = await ctx.db.get(args.id);
+    if (txn?.userId !== userId) throw new Error("Unauthorized");
+    await ctx.db.delete(args.id);
+  },
+});
