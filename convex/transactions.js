@@ -56,3 +56,19 @@ export const summary = query({
     return { income, spent, byCategory };
   },
 });
+
+export const add = mutation({
+  args: {
+    date: v.string(),
+    merchant: v.string(),
+    amount: v.number(),
+    category: v.string(),
+    icon: v.optional(v.string()),
+    source: v.union(v.literal("plaid"), v.literal("pdf"), v.literal("manual")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+    return ctx.db.insert("transactions", { userId, ...args });
+  },
+});
