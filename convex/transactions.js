@@ -24,3 +24,35 @@ export const list = query({
     return args.limit ? filtered.slice(0, args.limit) : filtered;
   },
 });
+
+export const summary = query({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const txns = await ctx.db
+      .query("transactions")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    const now = new Date();
+    const monthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const monthTxns = txns.filter((t) => t.date.startsWith(monthPrefix));
+
+    const income = monthTxns
+      .filter((t) => t.amount > 0)
+      .reduce((s, t) => s + t.amount, 0);
+    const spent = monthTxns
+      .filter((t) => t.amount < 0)
+      .reduce((s, t) => s + Math.abs(t.amount), 0);
+
+    const byCategory = {};
+    monthTxns
+      .filter((t) => t.amount < 0)
+      .forEach((t) => {
+        byCategory[t.category] = (byCategory[t.category] ?? 0) + Math.abs(t.amount);
+      });
+
+    return { income, spent, byCategory };
+  },
+});
