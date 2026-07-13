@@ -1,8 +1,13 @@
-export default {
+import { convexAuth } from "@convex-dev/auth/server";
+import { Password } from "@convex-dev/auth/providers/Password";
+import GitHub from "@auth/core/providers/github";
+
+export const { auth, signIn, signOut, getAuthUserId } = convexAuth({
   providers: [
-    {
-      domain: process.env.CONVEX_SITE_URL,
-      applicationID: "convex",
-    },
+    Password,
+    GitHub({
+      clientId: process.env.AUTH_GITHUB_ID,
+      clientSecret: process.env.AUTH_GITHUB_SECRET,
+    }),
   ],
-};
+});

@@ -8,9 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@auth/core':
+        specifier: ^0.37.4
+        version: 0.37.4
       '@convex-dev/auth':
         specifier: ^0.0.94
-        version: 0.0.94(@auth/core@0.41.2)(convex@1.42.1(react@19.2.7))(react@19.2.7)
+        version: 0.0.94(@auth/core@0.37.4)(convex@1.42.1(react@19.2.7))(react@19.2.7)
       '@hookform/resolvers':
         specifier: ^5.4.0
         version: 5.4.0(react-hook-form@7.81.0(react@19.2.7))
@@ -144,12 +147,12 @@ importers:
 
 packages:
 
-  '@auth/core@0.41.2':
-    resolution: {integrity: sha512-Hx5MNBxN2fJTbJKGUKAA0wca43D0Akl3TvufY54Gn8lop7F+34vU1zA1pn0vQfIoVuLIrpfc2nkyjwIaPJMW7w==}
+  '@auth/core@0.37.4':
+    resolution: {integrity: sha512-HOXJwXWXQRhbBDHlMU0K/6FT1v+wjtzdKhsNg0ZN7/gne6XPsIrjZ4daMcFnbq0Z/vsAbYBinQhhua0d77v7qw==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
       '@simplewebauthn/server': ^9.0.2
-      nodemailer: ^7.0.7
+      nodemailer: ^6.8.0
     peerDependenciesMeta:
       '@simplewebauthn/browser':
         optional: true
@@ -1681,9 +1684,6 @@ packages:
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
-  jose@6.2.3:
-    resolution: {integrity: sha512-YYVDInQKFJfR/xa3ojUTl8c2KoTwiL1R5Wg9YCydwH0x0B9grbzlg5HC7mMjCtUJjbQ/YnGEZIhI5tCgfTb4Hw==}
-
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -2180,10 +2180,10 @@ packages:
 
 snapshots:
 
-  '@auth/core@0.41.2':
+  '@auth/core@0.37.4':
     dependencies:
       '@panva/hkdf': 1.2.1
-      jose: 6.2.3
+      jose: 5.10.0
       oauth4webapi: 3.8.6
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
@@ -2288,9 +2288,9 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@convex-dev/auth@0.0.94(@auth/core@0.41.2)(convex@1.42.1(react@19.2.7))(react@19.2.7)':
+  '@convex-dev/auth@0.0.94(@auth/core@0.37.4)(convex@1.42.1(react@19.2.7))(react@19.2.7)':
     dependencies:
-      '@auth/core': 0.41.2
+      '@auth/core': 0.37.4
       '@oslojs/crypto': 1.0.1
       '@oslojs/encoding': 1.1.0
       convex: 1.42.1(react@19.2.7)
@@ -3591,8 +3591,6 @@ snapshots:
   jiti@2.7.0: {}
 
   jose@5.10.0: {}
-
-  jose@6.2.3: {}
 
   js-tokens@4.0.0: {}
 
