@@ -28,3 +28,14 @@ export const create = mutation({
     return ctx.db.insert("goals", { userId, ...args });
   },
 });
+
+export const updateSaved = mutation({
+  args: { id: v.id("goals"), savedAmount: v.number() },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+    const goal = await ctx.db.get(args.id);
+    if (goal?.userId !== userId) throw new Error("Unauthorized");
+    await ctx.db.patch(args.id, { savedAmount: args.savedAmount });
+  },
+});
