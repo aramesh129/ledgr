@@ -26,3 +26,14 @@ export const add = mutation({
     return ctx.db.insert("investments", { userId, ...args });
   },
 });
+
+export const updatePrice = mutation({
+  args: { id: v.id("investments"), currentPrice: v.number() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, {
+      currentPrice: args.currentPrice,
+      lastUpdated: new Date().toISOString(),
+    });
+  },
+});
+
