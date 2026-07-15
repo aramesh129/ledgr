@@ -20,3 +20,15 @@ export const saveAccessToken = mutation({
     return ctx.db.insert("plaidItems", { userId, ...args });
   },
 });
+
+export const listLinkedBanks = query({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+    const items = await ctx.db
+      .query("plaidItems")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+    return items.map(({ accessToken: _at, ...safe }) => safe);
+  },
+});
