@@ -12,3 +12,17 @@ export const list = query({
       .collect();
   },
 });
+
+export const add = mutation({
+  args: {
+    ticker: v.string(),
+    name: v.string(),
+    shares: v.number(),
+    purchasePrice: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+    return ctx.db.insert("investments", { userId, ...args });
+  },
+});
