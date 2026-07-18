@@ -26,3 +26,30 @@ function PrivateLayout() {
     </div>
   );
 }
+
+export default function App() {
+  const { isAuthenticated, isLoading } = useConvexAuth();
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-[#6b7280] text-sm">Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/auth"
+          element={isAuthenticated ? <Navigate to="/" /> : <AuthPage />}
+        />
+        <Route
+          path="/*"
+          element={isAuthenticated ? <PrivateLayout /> : <Navigate to="/auth" />}
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+}
