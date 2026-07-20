@@ -9,3 +9,15 @@ export function AuthPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  async function handleSubmit() {
+    setLoading(true);
+    setError("");
+    try {
+      await signIn("password", { email, password, flow: mode, name });
+    } catch (e) {
+      setError(e.message ?? "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
