@@ -30,6 +30,10 @@ export const add = mutation({
 export const updatePrice = mutation({
   args: { id: v.id("investments"), currentPrice: v.number() },
   handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+    const inv = await ctx.db.get(args.id);
+    if (inv?.userId !== userId) throw new Error("Unauthorized");
     await ctx.db.patch(args.id, {
       currentPrice: args.currentPrice,
       lastUpdated: new Date().toISOString(),
