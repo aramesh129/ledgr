@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Plus, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 export function Investments() {
   const investments = useQuery(api.investments.list);
@@ -30,8 +31,12 @@ export function Investments() {
   }
 
   async function refreshPrices() {
-    if (!investments) return;
+    if (!investments || investments.length === 0) {
+      toast.error("No holdings to refresh");
+      return;
+    }
     setRefreshing(true);
+    let updated = 0;
     for (const inv of investments) {
       try {
         const res = await fetch(
@@ -41,9 +46,13 @@ export function Investments() {
         const price = parseFloat(data["Global Quote"]?.["05. price"] ?? "0");
         if (price > 0) {
           await updatePrice({ id: inv._id, currentPrice: price });
+          updated++;
         }
-      } catch { /* skip on error */ }
+      } catch {
+        toast.error(`Failed to fetch price for ${inv.ticker}`);
+      }
     }
+    toast.success(`Updated ${updated} of ${investments.length} holdings`);
     setRefreshing(false);
   }
 
