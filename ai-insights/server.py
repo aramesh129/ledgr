@@ -94,4 +94,4 @@ def generate_investment_insights():
 if __name__ == '__main__':
     print("Starting AI Insights Server...")
     print("Make sure Ollama is running with llama3.2:3b model")
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5002, debug=True)
