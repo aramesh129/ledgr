@@ -7,6 +7,7 @@ import { Transactions } from "./pages/Transactions";
 import { Goals } from "./pages/Goals";
 import { Investments } from "./pages/Investments";
 import { AuthPage } from "./pages/Auth";
+import { Toaster } from "sonner";
 
 function PrivateLayout() {
   return (
@@ -23,6 +24,7 @@ function PrivateLayout() {
           </Routes>
         </main>
       </div>
+      <Toaster position="bottom-right" theme="dark" />
     </div>
   );
 }
