@@ -7,6 +7,10 @@ import "./index.css";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 
+if (!import.meta.env.VITE_CONVEX_URL) {
+  throw new Error("VITE_CONVEX_URL is not set in .env.local");
+}
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ConvexAuthProvider client={convex}>
