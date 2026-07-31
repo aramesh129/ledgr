@@ -16,3 +16,48 @@ function StatCard({ label, value, sub, accent }) {
   );
 }
 
+export function Dashboard() {
+  const summary = useQuery(api.transactions.summary);
+  const recentTxns = useQuery(api.transactions.list, { limit: 5 });
+  const latestInsight = useQuery(api.insights.latest);
+  const saveInsight = useMutation(api.insights.save);
+
+  const [insightText, setInsightText] = useState("");
+  const [loadingInsight, setLoadingInsight] = useState(false);
+
+  async function fetchInsights() {
+    if (!summary) return;
+    setLoadingInsight(true);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_AI_SERVICE_URL}/generate-insights`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            totalIncome: summary.income,
+            totalSpending: summary.spent,
+            netFlow: summary.income - summary.spent,
+            currentBalance: 2847.63,
+            spendingByCategory: Object.entries(summary.byCategory).map(
+              ([category, amount]) => ({ category, amount })
+            ),
+            topMerchants: [],
+            goals: [],
+            monthlyTrend: [],
+          }),
+        }
+      );
+      const data = await res.json();
+      const text =
+        data.insights?.spendingHighlights?.positiveReinforcement ??
+        JSON.stringify(data.insights, null, 2);
+      setInsightText(text);
+      await saveInsight({ content: text });
+    } catch {
+      setInsightText(
+        "Couldn't load insights right now. Make sure the AI service is running!"
+      );
+    }
+    setLoadingInsight(false);
+  }
