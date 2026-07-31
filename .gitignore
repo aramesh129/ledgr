@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+node_modules/
+dist/
+.env.local
+.env
+convex/_generated/
+pdf-processor/venv/
+ai-insights/venv/
+plaid-service/node_modules/
+*.pyc
+__pycache__/
+.DS_Store
