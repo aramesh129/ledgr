@@ -1,9 +1,8 @@
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { useConvexAuth } from "convex/react";
 import { Bell } from "lucide-react";
 
 export function TopBar() {
-  const user = useQuery(api.auth.currentUser);
+  const { isAuthenticated } = useConvexAuth();
 
   return (
     <header className="h-14 bg-[#18181f] border-b border-white/5 flex items-center justify-between px-6">
@@ -14,9 +13,11 @@ export function TopBar() {
         </button>
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-full bg-[#7F77DD] flex items-center justify-center text-xs font-semibold text-white">
-            {user?.name?.[0]?.toUpperCase() ?? "U"}
+            U
           </div>
-          <span className="text-sm text-[#9ca3af]">{user?.name ?? "Student"}</span>
+          <span className="text-sm text-[#9ca3af]">
+            {isAuthenticated ? "Signed in" : ""}
+          </span>
         </div>
       </div>
     </header>

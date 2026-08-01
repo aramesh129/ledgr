@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as goals from "../goals.js";
+import type * as http from "../http.js";
 import type * as insights from "../insights.js";
 import type * as investments from "../investments.js";
 import type * as plaid from "../plaid.js";
@@ -24,6 +25,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   goals: typeof goals;
+  http: typeof http;
   insights: typeof insights;
   investments: typeof investments;
   plaid: typeof plaid;

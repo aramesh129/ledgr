@@ -29,3 +29,13 @@ export const CATEGORY_COLORS = {
   Bills: "#E24B4A",
   Other: "#888780",
 };
+
+export const CATEGORY_ICONS = {
+  Food: "🍔",
+  Income: "💰",
+  Transport: "🚗",
+  Entertainment: "🎬",
+  Shopping: "🛍️",
+  Bills: "📋",
+  Other: "💳",
+};
