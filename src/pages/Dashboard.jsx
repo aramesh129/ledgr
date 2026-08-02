@@ -74,9 +74,26 @@ export function Dashboard() {
         throw new Error(data.error ?? "AI service failed");
       }
 
-      const text =
-        data.insights?.spendingHighlights?.positiveReinforcement ??
-        JSON.stringify(data.insights, null, 2);
+      const insights = data.insights;
+      const parts = [];
+
+      if (insights?.spendingHighlights?.positiveReinforcement) {
+        parts.push(insights.spendingHighlights.positiveReinforcement);
+      }
+      if (insights?.spendingHighlights?.overspendingAlert) {
+        parts.push(insights.spendingHighlights.overspendingAlert);
+      }
+      if (insights?.actionableRecommendations?.length) {
+        parts.push("\nRecommendations:");
+        insights.actionableRecommendations.forEach((r, i) => {
+        parts.push(`${i + 1}. ${r}`);
+    });
+      }
+if (insights?.funFacts?.length) {
+  parts.push("\n" + insights.funFacts[0]);
+}
+
+const text = parts.join("\n") || JSON.stringify(insights, null, 2);
 
       setInsightText(text);
       await saveInsight({ content: text });
