@@ -249,82 +249,79 @@ Keep it fun, relatable, and student-friendly. Use emojis sparingly. Make jokes a
         return prompt
     
     def _call_ollama(self, prompt: str) -> dict:
-    """Call Ollama API to generate insights"""
-    try:
-        response = requests.post(
-            f"{self.ollama_url}/api/generate",
-            json={
-                "model": self.model,
-                "prompt": prompt,
-                "stream": False,
-                "options": {
-                    "temperature": 0.7,
-                    "top_p": 0.9,
-                    "num_predict": 800
-                }
-            },
-            timeout=120
-        )
-        
-        if response.status_code == 200:
-            result = response.json()
-            response_text = result.get('response', '').strip()
+        """Call Ollama API to generate insights"""
+        try:
+            response = requests.post(
+                f"{self.ollama_url}/api/generate",
+                json={
+                    "model": self.model,
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {
+                        "temperature": 0.7,
+                        "top_p": 0.9,
+                        "num_predict": 800
+                    }
+                },
+                timeout=120
+            )
             
-            print(f"Raw LLM response: {response_text[:500]}")
-            
-            # Try to extract JSON
-            try:
-                start_idx = response_text.find('{')
-                end_idx = response_text.rfind('}') + 1
+            if response.status_code == 200:
+                result = response.json()
+                response_text = result.get('response', '').strip()
                 
-                if start_idx != -1 and end_idx > start_idx:
-                    json_str = response_text[start_idx:end_idx]
-                    parsed = json.loads(json_str)
-                    print("Successfully parsed JSON response")
-                    return parsed
-                else:
-                    # No JSON found — wrap the raw text in our structure
-                    print("No JSON found, wrapping raw text")
+                print(f"Raw LLM response: {response_text[:500]}")
+                
+                try:
+                    start_idx = response_text.find('{')
+                    end_idx = response_text.rfind('}') + 1
+                    
+                    if start_idx != -1 and end_idx > start_idx:
+                        json_str = response_text[start_idx:end_idx]
+                        parsed = json.loads(json_str)
+                        print("Successfully parsed JSON response")
+                        return parsed
+                    else:
+                        print("No JSON found, wrapping raw text")
+                        return {
+                            "spendingHighlights": {
+                                "biggestExpense": "Check your top spending category!",
+                                "overspendingAlert": response_text[:200] if response_text else "Review your spending habits",
+                                "positiveReinforcement": response_text if response_text else "Keep tracking your finances!"
+                            },
+                            "categoryInsights": [],
+                            "predictions": [],
+                            "funFacts": [response_text[:300] if response_text else "Keep going!"],
+                            "actionableRecommendations": [
+                                "Review your spending categories",
+                                "Set a monthly budget",
+                                "Track daily expenses"
+                            ]
+                        }
+                except json.JSONDecodeError as e:
+                    print(f"JSON parse error: {e}")
                     return {
                         "spendingHighlights": {
-                            "biggestExpense": "Check your top spending category!",
-                            "overspendingAlert": response_text[:200] if response_text else "Review your spending habits",
-                            "positiveReinforcement": response_text if response_text else "Keep tracking your finances!"
+                            "biggestExpense": "See your category breakdown above",
+                            "overspendingAlert": "",
+                            "positiveReinforcement": response_text if response_text else "Keep tracking!"
                         },
                         "categoryInsights": [],
                         "predictions": [],
-                        "funFacts": [response_text[:300] if response_text else "Keep going!"],
+                        "funFacts": [],
                         "actionableRecommendations": [
-                            "Review your spending categories",
-                            "Set a monthly budget",
-                            "Track daily expenses"
+                            "Review your top spending categories",
+                            "Set savings goals",
+                            "Track your income vs spending"
                         ]
                     }
-            except json.JSONDecodeError as e:
-                print(f"JSON parse error: {e}")
-                # Return raw text wrapped in structure
-                return {
-                    "spendingHighlights": {
-                        "biggestExpense": "See your category breakdown above",
-                        "overspendingAlert": "",
-                        "positiveReinforcement": response_text if response_text else "Keep tracking!"
-                    },
-                    "categoryInsights": [],
-                    "predictions": [],
-                    "funFacts": [],
-                    "actionableRecommendations": [
-                        "Review your top spending categories",
-                        "Set savings goals",
-                        "Track your income vs spending"
-                    ]
-                }
-        else:
-            print(f"Ollama returned status: {response.status_code}")
+            else:
+                print(f"Ollama returned status: {response.status_code}")
+                return self._create_fallback_insights("")
+                
+        except Exception as e:
+            print(f"Error in LLM call: {e}", file=sys.stderr)
             return self._create_fallback_insights("")
-            
-    except Exception as e:
-        print(f"Error in LLM call: {e}", file=sys.stderr)
-        return self._create_fallback_insights("")
 
 def main():
     """Test the AI insights service"""
