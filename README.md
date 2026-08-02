@@ -4,10 +4,11 @@ A personal finance platform built for students by a student. Track spending, set
 
 ## Demo
 
-![Ledgr Dashboard](public/screenshots/dashboard.png)
-![AI Insights](public/screenshots/ai.png)
-![Transactions](public/screenshots/transactions.png)
-![Goals](public/screenshots/goals.png)
+![Ledgr Dashboard](/public/screenshots/dashboard.png)
+![AI Insights](/public/screenshots/ai.png)
+![Transactions](/public/screenshots/transactions.png)
+![Goals](/public/screenshots/goals.png)
+
 ---
 
 ## Features
