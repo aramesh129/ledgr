@@ -248,81 +248,83 @@ Keep it fun, relatable, and student-friendly. Use emojis sparingly. Make jokes a
 
         return prompt
     
-    def _call_ollama(self, prompt: str) -> Dict[str, Any]:
-        """Call Ollama API to generate insights"""
-        try:
-            response = requests.post(
-                f"{self.ollama_url}/api/generate",
-                json={
-                    "model": self.model,
-                    "prompt": prompt,
-                    "stream": False,
-                    "options": {
-                        "temperature": 0.8,
-                        "top_p": 0.9,
-                        "max_tokens": 1000
-                    }
-                },
-                timeout=120
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                response_text = result.get('response', '')
-                
-                # Try to extract JSON from the response
-                try:
-                    # Find JSON in the response
-                    start_idx = response_text.find('{')
-                    end_idx = response_text.rfind('}') + 1
-                    
-                    if start_idx != -1 and end_idx != 0:
-                        json_str = response_text[start_idx:end_idx]
-                        return json.loads(json_str)
-                    else:
-                        # Fallback if no JSON found
-                        return self._create_fallback_insights(response_text)
-                except json.JSONDecodeError:
-                    return self._create_fallback_insights(response_text)
-            else:
-                print(f"Error calling Ollama: {response.status_code}", file=sys.stderr)
-                return self._create_fallback_insights("")
-                
-        except Exception as e:
-            print(f"Error in LLM call: {e}", file=sys.stderr)
-            return self._create_fallback_insights("")
-    
-    def _create_fallback_insights(self, response_text: str) -> Dict[str, Any]:
-        """Create fallback insights if LLM fails"""
-        return {
-            "spendingHighlights": {
-                "biggestExpense": "Your biggest expense needs some attention! 💸",
-                "overspendingAlert": "Time to check those spending habits!",
-                "positiveReinforcement": "Every small step counts toward your financial goals! 🎯"
+    def _call_ollama(self, prompt: str) -> dict:
+    """Call Ollama API to generate insights"""
+    try:
+        response = requests.post(
+            f"{self.ollama_url}/api/generate",
+            json={
+                "model": self.model,
+                "prompt": prompt,
+                "stream": False,
+                "options": {
+                    "temperature": 0.7,
+                    "top_p": 0.9,
+                    "num_predict": 800
+                }
             },
-            "categoryInsights": [
-                {
-                    "category": "General",
-                    "insight": "Your spending patterns show room for optimization",
-                    "suggestion": "Try tracking your daily expenses for a week"
+            timeout=120
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            response_text = result.get('response', '').strip()
+            
+            print(f"Raw LLM response: {response_text[:500]}")
+            
+            # Try to extract JSON
+            try:
+                start_idx = response_text.find('{')
+                end_idx = response_text.rfind('}') + 1
+                
+                if start_idx != -1 and end_idx > start_idx:
+                    json_str = response_text[start_idx:end_idx]
+                    parsed = json.loads(json_str)
+                    print("Successfully parsed JSON response")
+                    return parsed
+                else:
+                    # No JSON found — wrap the raw text in our structure
+                    print("No JSON found, wrapping raw text")
+                    return {
+                        "spendingHighlights": {
+                            "biggestExpense": "Check your top spending category!",
+                            "overspendingAlert": response_text[:200] if response_text else "Review your spending habits",
+                            "positiveReinforcement": response_text if response_text else "Keep tracking your finances!"
+                        },
+                        "categoryInsights": [],
+                        "predictions": [],
+                        "funFacts": [response_text[:300] if response_text else "Keep going!"],
+                        "actionableRecommendations": [
+                            "Review your spending categories",
+                            "Set a monthly budget",
+                            "Track daily expenses"
+                        ]
+                    }
+            except json.JSONDecodeError as e:
+                print(f"JSON parse error: {e}")
+                # Return raw text wrapped in structure
+                return {
+                    "spendingHighlights": {
+                        "biggestExpense": "See your category breakdown above",
+                        "overspendingAlert": "",
+                        "positiveReinforcement": response_text if response_text else "Keep tracking!"
+                    },
+                    "categoryInsights": [],
+                    "predictions": [],
+                    "funFacts": [],
+                    "actionableRecommendations": [
+                        "Review your top spending categories",
+                        "Set savings goals",
+                        "Track your income vs spending"
+                    ]
                 }
-            ],
-            "predictions": [
-                {
-                    "type": "general",
-                    "message": "With consistent effort, you can reach your financial goals",
-                    "actionable": "Set up automatic savings transfers"
-                }
-            ],
-            "funFacts": [
-                "Financial health is a journey, not a destination! 🚀"
-            ],
-            "actionableRecommendations": [
-                "Review your spending categories monthly",
-                "Set up a budget for discretionary spending",
-                "Consider using a budgeting app for better tracking"
-            ]
-        }
+        else:
+            print(f"Ollama returned status: {response.status_code}")
+            return self._create_fallback_insights("")
+            
+    except Exception as e:
+        print(f"Error in LLM call: {e}", file=sys.stderr)
+        return self._create_fallback_insights("")
 
 def main():
     """Test the AI insights service"""
