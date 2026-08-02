@@ -1,16 +1,51 @@
-# React + Vite
+# Ledgr
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personal finance platform built for students by a student. Track spending, set savings goals, monitor investments, and get AI financial insights all in this one place.
 
-Currently, two official plugins are available:
+## Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+> Add a screen recording or screenshot here
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- **Transaction tracking** — add transactions manually, upload bank statement PDFs, or connect a real bank account via Plaid
+- **Smart categorization** — transactions are automatically categorized (Food, Transport, Entertainment, Bills, etc.)
+- **Savings goals** — create goals with target amounts, deadlines, and visual progress tracking
+- **Investment portfolio** — track stocks, ETFs, and crypto holdings with live price refresh via Alpha Vantage
+- **AI financial insights** — personalized financial advice powered by LLaMA 3.2 running locally via Ollama
+- **Real-time updates** — all data syncs instantly across the app via Convex's reactive database
+- **Secure auth** — email/password authentication with JWT sessions via @convex-dev/auth
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Tech Stack
+
+### Frontend
+- React 19 + Vite
+- Tailwind CSS v4
+- Recharts (data visualization)
+- Radix UI (accessible components)
+
+### Backend
+- Convex (database, serverless functions, authentication)
+
+### Microservices
+- Python + Flask — PDF bank statement processor (PDFPlumber)
+- Python + Flask — AI insights service (Ollama + LLaMA 3.2)
+
+### External APIs
+- Plaid — bank account linking and transaction import
+- Alpha Vantage — real time stock and ETF prices
+- Ollama — local LLM inference (LLaMA 3.2)
+
+---
+
+## Key Implementation Details
+
+**Real-time data** — Convex's reactive queries mean every component re-renders automatically when data changes so no polling is involved.
+
+**Security** — Every Convex mutation and query verifies the authenticated user via `getAuthUserId()`. Users can only read and modify their own data.
+
+**Microservice architecture** — The PDF and AI services are intentionally decoupled from the frontend. Each runs independently on its own port and communicates via REST, making them easy to swap, scale, or replace.
